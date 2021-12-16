@@ -1,13 +1,13 @@
 const userRouter = require("express").Router();
-
 const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = process.env;
 const { getUser } = require("../db/users");
 
 userRouter.post("/login", async (req, res) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
   try {
-    console.log(username);
-    const user = await getUser({ username });
+    console.log(username, password);
+    const user = await getUser({ username, password });
     console.log(user, "user");
     const token = jwt.sign(
       { id: user.id, username: user.username },

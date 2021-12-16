@@ -1,22 +1,22 @@
 const client = require("./client");
 const bcrypt = require("bcrypt");
 
-async function createPayer({ username, password }) {
+async function createPayer({ username, password, points, date }) {
   try {
     const SALT_COUNT = 10;
     const hashedPassword = await bcrypt.hash(password, SALT_COUNT);
     const {
-      rows: [payer],
+      rows: [user],
     } = await client.query(
       `
-        INSERT INTO payer (username, password)
-        VALUES ($1, $2)
+        INSERT INTO payer (username, password, points, date)
+        VALUES ($1, $2, $3, $4)
         RETURNING *;
         `,
-      [username, hashedPassword]
+      [username, hashedPassword, points, date]
     );
-    delete payer.password;
-    return payer;
+    delete user.password;
+    return user;
   } catch (error) {
     console.log("error creating user");
     throw error;
