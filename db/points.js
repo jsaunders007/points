@@ -1,51 +1,9 @@
 const client = require("./client");
 
-async function createPoints({ points, date }) {
-  try {
-    const resp = await client.query(
-      `
-       INSERT INTO points (points, date)
-       VALUES ($1, $2)
-       RETURNING *;
-       `,
-      [points, date]
-    );
-    return resp.rows[0];
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getAllPoints() {
-  try {
-    const resp = await client.query(`
-        SELECT * FROM points
-        `);
-    const data = resp.rows;
-    console.log(data);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getPointsById(id) {
-  try {
-    const resp = await client.query(
-      `
-        SELECT * FROM points WHERE id = $1
-        `,
-      [id]
-    );
-    const data = resp.rows[0];
-    console.log(data);
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
+// This first function gets the oldest points by using the username, and allows the api route to use those old points first.
+console.log("hi");
 async function getOldestPointsByUsername(user_id) {
+  console.log("how are you?");
   try {
     const resp = await client.query(
       `
@@ -65,9 +23,70 @@ async function getOldestPointsByUsername(user_id) {
   }
 }
 
+// This function adds points to a specific user as if that user gained more reward points for shopping online.
+
+async function addPointsToPayer({ id, points }) {
+  try {
+    const resp = await client.query(
+      `
+      UPDATE payer SET points = $2
+      WHERE id = $1;
+      `,
+      [id, points]
+    );
+    const data = resp.rows[0];
+    console.log(data);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// This function allows the api route to spend the oldest points first for each user.
+
+async function spendOldestPoints({ id, points, date }) {
+  try {
+    const resp = await client.query(
+      `
+      SELECT (id, points, date)
+      FROM (SELECT id, points, date, 
+        rank() OVER (PARTITION BY id ORDER BY date) AS rk)
+        AS subq
+        WHERE rk = 1
+      `,
+      [id, points, date]
+    );
+    const data = resp.rows;
+    console.log(data);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// This function gives the user an updated balance of their reward points.
+
+async function pointsBalance(id) {
+  console.log("hi");
+  try {
+    const resp = await client.query(
+      `
+SELECT points FROM payer
+WHERE id = $1
+     `,
+      [id]
+    );
+    const data = resp.rows;
+    console.log(data);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
-  createPoints,
-  getAllPoints,
-  getPointsById,
   getOldestPointsByUsername,
+  spendOldestPoints,
+  pointsBalance,
+  addPointsToPayer,
 };

@@ -1,8 +1,8 @@
-const userRouter = require("./userRouter");
 const apiRouter = require("express").Router();
+const pointsRouter = require("./pointsRouter");
 
-apiRouter.use("/user", userRouter);
-apiRouter.get("./health", (req, res) => {
+apiRouter.use("/points", pointsRouter);
+apiRouter.get("/health", (req, res) => {
   res.send({ message: "Healthy!" });
 });
 
