@@ -2,18 +2,18 @@ const client = require("./client");
 
 // This first function gets the oldest points by using the username, and allows the api route to use those old points first.
 console.log("hi");
-async function getOldestPointsByUsername(user_id) {
+async function getOldestPointsByUsername(id) {
   console.log("how are you?");
   try {
     const resp = await client.query(
       `
         SELECT payer.username, latest_points.date
-        FROM (SELECT user_id, MAX(date) AS date
+        FROM (SELECT id, MAX(date) AS date
         FROM points
-        GROUP BY user_id) AS latest_points
-        INNER JOIN payer ON payer.id = latest_points.user_id
+        GROUP BY id) AS latest_points
+        INNER JOIN payer ON payer.id = latest_points.id
         `,
-      [user_id]
+      [id]
     );
     const data = resp.rows[0];
     console.log(data);

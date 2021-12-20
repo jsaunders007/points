@@ -6,7 +6,9 @@ const {
 
 const pointsRouter = require("express").Router();
 
-pointsRouter.post("/add-points", async (req, res) => {
+// I was not sucessful with this route, any feedback would be appreciated!
+
+pointsRouter.post("/add", async (req, res) => {
   try {
     const { id, points } = req.body;
     const resp = await addPointsToPayer(id, points);
@@ -16,7 +18,9 @@ pointsRouter.post("/add-points", async (req, res) => {
   }
 });
 
-pointsRouter.post("/spend-points", async (req, res) => {
+// I was not so sucessful on this route, and feedback would be appreciated!
+
+pointsRouter.post("/spend", async (req, res) => {
   try {
     const { id, points, date } = req.body;
     const resp = await spendOldestPoints(id, points, date);
@@ -25,6 +29,8 @@ pointsRouter.post("/spend-points", async (req, res) => {
     throw error;
   }
 });
+
+// I was able to sucessfully get the balance of the points.
 
 pointsRouter.get("/balance", async (req, res) => {
   try {
